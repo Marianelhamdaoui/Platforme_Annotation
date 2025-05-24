@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un Annotateur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: rgba(108, 92, 231, 0.1);
+            --secondary: #A29BFE;
+            --success: #00B894;
+            --info: #0984E3;
+            --warning: #FDCB6E;
+            --danger: #D63031;
+            --light: #F5F6FA;
+            --dark: #2D3436;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --bg: linear-gradient(to bottom right, #E6F0FA, #F3E8FF);
+            --border: #DFE6E9;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            background-color: #FFFFFF;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 2rem auto;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 i {
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        h2 i:hover {
+            transform: scale(1.2);
+        }
+
+        .alert {
+            border-radius: var(--radius);
+            border-left: 4px solid transparent;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .alert-success {
+            background-color: rgba(0, 184, 148, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background-color: rgba(214, 48, 49, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label i {
+            color: var(--primary);
+            width: 20px;
+            transition: var(--transition);
+        }
+
+        .form-label:hover i {
+            transform: scale(1.1);
+        }
+
+        .form-control {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.15);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            border-radius: var(--radius);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn i {
+            font-size: 0.9rem;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5C4BC7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--text-light);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555E62;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #E8B45F;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .invalid-feedback {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--danger);
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .was-validated .form-control:invalid ~ .invalid-feedback {
+            display: flex;
+        }
+
+        .modal-content {
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h2 class="animate-title"><i class="fas fa-user-plus"></i>Créer un Annotateur</h2>
+
+    <!-- Messages d'alerte -->
+    <div th:if="${successMessage}" class="alert alert-success animate-alert">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger animate-alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <form th:action="@{/admin/create-user}" method="post" class="needs-validation" novalidate id="createAnnotatorForm">
+        <div class="input-wrapper">
+            <label for="login" class="form-label">
+                <i class="fas fa-user"></i>Login
+            </label>
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" id="login" name="login" class="form-control" required data-bs-toggle="tooltip" title="Entrez un login unique pour l'annotateur">
+            <div class="invalid-feedback">
+                <i class="fas fa-exclamation-triangle"></i>Veuillez fournir un login valide.
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <label for="nom" class="form-label">
+                <i class="fas fa-id-card"></i>Nom
+            </label>
+            <i class="fas fa-id-card input-icon"></i>
+            <input type="text" id="nom" name="nom" class="form-control" required data-bs-toggle="tooltip" title="Entrez le nom de l'annotateur">
+            <div class="invalid-feedback">
+                <i class="fas fa-exclamation-triangle"></i>Veuillez fournir un nom.
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <label for="prenom" class="form-label">
+                <i class="fas fa-id-card"></i>Prénom
+            </label>
+            <i class="fas fa-id-card input-icon"></i>
+            <input type="text" id="prenom" name="prenom" class="form-control" required data-bs-toggle="tooltip" title="Entrez le prénom de l'annotateur">
+            <div class="invalid-feedback">
+                <i class="fas fa-exclamation-triangle"></i>Veuillez fournir un prénom.
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <label for="email" class="form-label">
+                <i class="fas fa-envelope"></i>Email
+            </label>
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="email" name="email" class="form-control" required data-bs-toggle="tooltip" title="Entrez une adresse email valide">
+            <div class="invalid-feedback">
+                <i class="fas fa-exclamation-triangle"></i>Veuillez fournir un email valide.
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmCreateModal">
+                <i class="fas fa-user-plus"></i>Créer
+            </button>
+            <button type="button" class="btn btn-warning" onclick="resetForm()" data-bs-toggle="tooltip" title="Effacer tous les champs">
+                <i class="fas fa-eraser"></i>Effacer
+            </button>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Retourner au tableau de bord">
+                <i class="fas fa-arrow-left"></i>Retour au Dashboard
+            </a>
+        </div>
+
+        <!-- Modal de confirmation -->
+        <div class="modal fade" id="confirmCreateModal" tabindex="-1" aria-labelledby="confirmCreateModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmCreateModalLabel">Confirmer la création</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Voulez-vous créer cet annotateur ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                        <button type="submit" form="createAnnotatorForm" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Confirmer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialisation des tooltips Bootstrap
+    document.addEventListener('DOMContentLoaded', () => {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+
+    // Animation GSAP pour le titre
+    gsap.from(".animate-title", {
+        opacity: 0,
+        y: -50,
+        duration: 1,
+        ease: "power3.out"
+    });
+
+    // Animation GSAP pour les alertes
+    gsap.from(".animate-alert", {
+        opacity: 0,
+        y: 20,
+        duration: 0.5,
+        ease: "power2.out"
+    });
+
+    // Animation GSAP pour les champs de formulaire
+    gsap.utils.toArray(".form-control").forEach((field, i) => {
+        gsap.from(field, {
+            opacity: 0,
+            y: 20,
+            duration: 0.8,
+            delay: i * 0.2,
+            scrollTrigger: {
+                trigger: field,
+                start: "top 80%",
+            }
+        });
+    });
+
+    // Animation GSAP pour les icônes d'entrée
+    gsap.utils.toArray(".input-icon").forEach((icon, i) => {
+        gsap.from(icon, {
+            opacity: 0,
+            x: -10,
+            duration: 0.8,
+            delay: i * 0.2,
+            scrollTrigger: {
+                trigger: icon,
+                start: "top 80%",
+            }
+        });
+    });
+
+    // Animation au clic des boutons
+    document.querySelectorAll(".btn").forEach(button => {
+        button.addEventListener("click", () => {
+            gsap.to(button, {
+                scale: 0.95,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1,
+                ease: "power1.inOut"
+            });
+        });
+    });
+
+    // Validation du formulaire
+    (function() {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    gsap.to(".invalid-feedback", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+
+    // Validation en temps réel de l'email
+    document.getElementById("email").addEventListener("input", function() {
+        const email = this.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email) && email !== "") {
+            this.classList.add("is-invalid");
+            this.classList.remove("is-valid");
+        } else if (email !== "") {
+            this.classList.add("is-valid");
+            this.classList.remove("is-invalid");
+        } else {
+            this.classList.remove("is-valid", "is-invalid");
+        }
+    });
+
+    // Réinitialiser le formulaire
+    function resetForm() {
+        const form = document.getElementById("createAnnotatorForm");
+        form.reset();
+        form.classList.remove("was-validated");
+        gsap.to(".form-control", {
+            opacity: 0,
+            y: 20,
+            duration: 0.3,
+            stagger: 0.1,
+            onComplete: () => {
+                gsap.to(".form-control", {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    stagger: 0.1
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

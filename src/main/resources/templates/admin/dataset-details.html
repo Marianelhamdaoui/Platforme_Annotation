@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Détails du Dataset</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --primary: #6C5CE7;
+      --primary-light: rgba(108, 92, 231, 0.1);
+      --secondary: #A29BFE;
+      --success: #00B894;
+      --info: #0984E3;
+      --warning: #FDCB6E;
+      --danger: #D63031;
+      --light: #F5F6FA;
+      --dark: #2D3436;
+      --text: #2D3436;
+      --text-light: #636E72;
+      --bg: linear-gradient(to bottom right, #E6F0FA, #F3E8FF);
+      --border: #DFE6E9;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      padding: 2rem;
+      background-color: #FFFFFF;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin: 2rem auto;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    h2 {
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 1.8rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    .alert {
+      border-radius: var(--radius);
+      border-left: 4px solid transparent;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: var(--transition);
+    }
+
+    .alert-success {
+      background-color: rgba(0, 184, 148, 0.1);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .alert-danger {
+      background-color: rgba(214, 48, 49, 0.1);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .dataset-info {
+      background-color: var(--light);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .dataset-info p {
+      margin-bottom: 0.75rem;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .badge-class {
+      background-color: var(--secondary);
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 50px;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      transform: scale(0.95);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .badge-class:hover {
+      transform: scale(1.05);
+      background-color: var(--primary);
+    }
+
+    .table-responsive {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .table {
+      margin-bottom: 0;
+      transform-origin: top;
+    }
+
+    .table th {
+      background-color: var(--light);
+      border-bottom: 2px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .table th:hover {
+      background-color: var(--primary-light);
+    }
+
+    .table tr {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      opacity: 0;
+    }
+
+    .pagination {
+      justify-content: center;
+      margin-top: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .page-item {
+      margin: 0 3px;
+      transition: var(--transition);
+    }
+
+    .page-item.active .page-link {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .page-link {
+      color: var(--primary);
+      border-radius: var(--radius) !important;
+      min-width: 40px;
+      text-align: center;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .page-link:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .btn {
+      border-radius: var(--radius);
+      padding: 0.6rem 1.25rem;
+      transition: var(--transition) !important;
+      transform: scale(1);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-secondary {
+      background-color: var(--text-light);
+      border-color: var(--text-light);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+  <h2 th:text="|Détails de ${dataset.nomDataset}|"></h2>
+
+  <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+  <div class="dataset-info">
+    <p><strong>Taille :</strong> <span th:text="${dataset.taille}"></span> couples</p>
+    <p><strong>Avancement :</strong> <span th:text="${#numbers.formatDecimal(dataset.avancement, 1, 2)}"></span>%</p>
+    <p><strong>Description :</strong> <span th:text="${dataset.description} ?: 'Aucune description'"></span></p>
+    <p><strong>Classes :</strong>
+      <span th:each="classe : ${classes}" class="badge-class" th:text="${classe.texteClass}"></span>
+      <span th:if="${#lists.isEmpty(classes)}">Aucune classe définie</span>
+    </p>
+  </div>
+
+  <h3>Couples de Textes</h3>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Texte 1</th>
+        <th>Texte 2</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="couple,iter : ${couples}" th:attr="data-index=${iter.index}">
+        <td th:text="${couple.id}"></td>
+        <td th:text="${couple.text1}"></td>
+        <td th:text="${couple.text2}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(couples)}">
+        <td colspan="3" class="empty-state">Aucun couple de texte disponible.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{/admin/dataset-details/{id}(id=${dataset.id}, page=${currentPage - 1})}">
+          &laquo;
+        </a>
+      </li>
+      <li th:each="p : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${p == currentPage} ? 'active'">
+        <a class="page-link" th:href="@{/admin/dataset-details/{id}(id=${dataset.id}, page=${p})}" th:text="${p + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+        <a class="page-link" th:href="@{/admin/dataset-details/{id}(id=${dataset.id}, page=${currentPage + 1})}">
+          &raquo;
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="action-buttons">
+    <a th:href="@{/admin/dataset-annotators/{id}(id=${dataset.id})}" class="btn btn-primary">Afficher les Annotateurs</a>
+    <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Retour au Dashboard</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Animate main container
+    gsap.to('.container', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: "power2.out"
+    });
+
+    // Animate title
+    gsap.to('h2', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      delay: 0.2,
+      ease: "back.out(1.2)"
+    });
+
+    // Animate alerts
+    gsap.to('.alert', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      delay: 0.4,
+      stagger: 0.1,
+      ease: "power2.out"
+    });
+
+    // Animate dataset info
+    gsap.to('.dataset-info', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      delay: 0.6,
+      ease: "power2.out"
+    });
+
+    // Animate dataset info paragraphs
+    gsap.to('.dataset-info p', {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      delay: 0.8,
+      stagger: 0.1,
+      ease: "power2.out"
+    });
+
+    // Animate badges
+    gsap.to('.badge-class', {
+      opacity: 1,
+      scale: 1,
+      duration: 0.4,
+      delay: 1.0,
+      stagger: 0.05,
+      ease: "back.out(1.5)"
+    });
+
+    // Animate table
+    gsap.to('.table-responsive', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      delay: 1.2,
+      ease: "power2.out"
+    });
+
+    // Animate table rows
+    gsap.to('.table tr', {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      delay: 1.4,
+      stagger: 0.03,
+      ease: "power2.out"
+    });
+
+    // Animate empty state
+    gsap.to('.empty-state', {
+      opacity: 1,
+      duration: 0.6,
+      delay: 1.4,
+      ease: "power2.out"
+    });
+
+    // Animate pagination
+    gsap.to('.pagination', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      delay: 1.6,
+      ease: "power2.out"
+    });
+
+    // Animate action buttons
+    gsap.to('.action-buttons', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      delay: 1.8,
+      ease: "power2.out"
+    });
+
+    // Button hover animations
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        gsap.to(btn, {
+          scale: 1.05,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, {
+          scale: 1,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      });
+    });
+
+    // Badge hover animations
+    document.querySelectorAll('.badge-class').forEach(badge => {
+      badge.addEventListener('mouseenter', () => {
+        gsap.to(badge, {
+          scale: 1.1,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      });
+      badge.addEventListener('mouseleave', () => {
+        gsap.to(badge, {
+          scale: 1,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

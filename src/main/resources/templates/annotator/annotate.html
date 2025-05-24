@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Annoter une Tâche</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: rgba(108, 92, 231, 0.1);
+            --secondary: #A29BFE;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #D63031;
+            --light: #F5F6FA;
+            --dark: #2D3436;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --bg: linear-gradient(to bottom right, #E6F0FA, #F3E8FF);
+            --border: #DFE6E9;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            background-color: #FFFFFF;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 2rem auto;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 i {
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        h2 i:hover {
+            transform: scale(1.2);
+        }
+
+        .alert {
+            border-radius: var(--radius);
+            border-left: 4px solid transparent;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background-color: rgba(0, 184, 148, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background-color: rgba(214, 48, 49, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-warning {
+            background-color: rgba(253, 203, 110, 0.1);
+            border-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .text-display {
+            background-color: var(--light);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .text-display p {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .text-display strong {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .form-check {
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+        }
+
+        .form-check-input {
+            border: 2px solid var(--border);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .form-check-label {
+            margin-left: 0.5rem;
+        }
+
+        .btn {
+            border-radius: var(--radius);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn i {
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--text-light);
+            color: white;
+            border: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .progress-container {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .progress-text {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .progress {
+            flex-grow: 1;
+            height: 10px;
+            border-radius: var(--radius);
+            background-color: var(--light);
+        }
+
+        .progress-bar {
+            background-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h2><i class="fas fa-pen"></i>Annoter une Tâche</h2>
+
+    <div th:if="${successMessage}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <form th:action="@{/annotator/save-annotation}" method="post">
+        <input type="hidden" name="tacheId" th:value="${tache.id}">
+        <input type="hidden" name="annotateurId" th:value="${annotateurId}">
+        <input type="hidden" name="coupleId" th:value="${couple.id}">
+        <input type="hidden" name="currentIndex" th:value="${currentIndex}">
+
+        <div class="text-display mb-4">
+            <p><i class="fas fa-id-badge"></i><strong>ID Couple :</strong> <span th:text="${couple.id}"></span></p>
+            <p><i class="fas fa-file-alt"></i><strong>Texte 1 :</strong> <span th:text="${couple.text1}"></span></p>
+            <p><i class="fas fa-file-alt"></i><strong>Texte 2 :</strong> <span th:text="${couple.text2}"></span></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label"><i class="fas fa-tags"></i><strong>Sélectionner une classe :</strong></label>
+            <div th:if="${#lists.isEmpty(datasetClasses)}" class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>Aucune classe disponible pour ce dataset. Veuillez contacter l'administrateur.
+            </div>
+            <div th:unless="${#lists.isEmpty(datasetClasses)}">
+                <div th:each="classe : ${datasetClasses}">
+                    <div class="form-check">
+                        <input type="radio" name="classe" th:value="${classe}" class="form-check-input"
+                               th:checked="${classe == selectedClass}" required>
+                        <label th:text="${classe}" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-secondary" th:onclick="|location.href='@{/annotator/annotate/{tacheId}(tacheId=${tache.id}, index=${currentIndex - 1})}'|"
+                    th:disabled="${currentIndex == 0}">
+                <i class="fas fa-arrow-left"></i> Précédent
+            </button>
+            <button type="button" class="btn btn-secondary" th:onclick="|location.href='@{/annotator/annotate/{tacheId}(tacheId=${tache.id}, index=${currentIndex + 1})}'|"
+                    th:disabled="${currentIndex == totalCouples - 1}">
+                <i class="fas fa-arrow-right"></i> Suivant
+            </button>
+            <button type="submit" class="btn btn-primary" th:disabled="${#lists.isEmpty(datasetClasses)}">
+                <i class="fas fa-check"></i> Valider
+            </button>
+            <a th:href="@{/annotator/dashboard}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Retour au Dashboard
+            </a>
+        </div>
+
+        <div class="progress-container">
+            <span class="progress-text">Progression : <span th:text="${currentIndex + 1}"></span>/<span th:text="${totalCouples}"></span></span>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" th:style="'width: ' + (${totalCouples} > 0 ? (${currentIndex + 1} * 100 / ${totalCouples}) : 0) + '%'"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

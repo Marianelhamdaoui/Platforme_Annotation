@@ -1,0 +1,496 @@
+
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Tâches</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: rgba(108, 92, 231, 0.1);
+            --secondary: #A29BFE;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #D63031;
+            --light: #F5F6FA;
+            --dark: #2D3436;
+            --text: #2D3436;
+            --text-light: #636E72;
+            --bg: linear-gradient(to bottom right, #E6F0FA, #F3E8FF);
+            --border: #DFE6E9;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 2rem;
+            background-color: #FFFFFF;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 2rem auto;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 i {
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        h2 i:hover {
+            transform: scale(1.2);
+        }
+
+        .alert {
+            border-radius: var(--radius);
+            border-left: 4px solid transparent;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .alert-success {
+            background-color: rgba(0, 184, 148, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background-color: rgba(214, 48, 49, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container input {
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem var(--primary-light);
+        }
+
+        .table-responsive {
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+            color: var(--text);
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(245, 246, 250, 0.5);
+        }
+
+        thead {
+            background-color: var(--light);
+        }
+
+        th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            color: var(--dark);
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: var(--primary-light);
+        }
+
+        th i {
+            margin-left: 0.25rem;
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+
+        th.sort-asc i.fa-sort-up,
+        th.sort-desc i.fa-sort-down {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr {
+            transition: var(--transition);
+        }
+
+        tr:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn {
+            border-radius: var(--radius);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn i {
+            font-size: 0.9rem;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: var(--radius);
+            background-color: var(--light);
+        }
+
+        .progress-bar {
+            background-color: var(--success);
+            transition: width 0.5s ease;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            color: var(--border);
+        }
+
+        /* Style pour les cartes sur mobile */
+        .task-card {
+            display: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--light);
+            transition: var(--transition);
+        }
+
+        .task-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .task-card p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .task-card strong {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .table-responsive {
+                display: none;
+            }
+
+            .task-card {
+                display: block;
+            }
+
+            .search-container input {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h2 class="animate-title"><i class="fas fa-tasks"></i>Mes Tâches</h2>
+
+    <!-- Messages d'alerte -->
+    <div th:if="${successMessage}" class="alert alert-success animate-alert">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger animate-alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Champ de recherche -->
+    <div class="search-container animate-section">
+        <input type="text" id="searchTasks" class="form-control" placeholder="Rechercher par nom de dataset ou avancement..." data-bs-toggle="tooltip" title="Saisissez un nom de dataset ou un pourcentage d'avancement">
+    </div>
+
+    <!-- Tableau des tâches -->
+    <div class="table-responsive animate-section">
+        <table class="table table-striped" id="tasksTable">
+            <thead>
+            <tr>
+                <th data-sort="id" data-bs-toggle="tooltip" title="Trier par ID"><i class="fas fa-id-badge"></i> ID <i class="fas fa-sort"></i></th>
+                <th data-sort="dataset" data-bs-toggle="tooltip" title="Trier par nom de dataset"><i class="fas fa-database"></i> Nom du Dataset <i class="fas fa-sort"></i></th>
+                <th data-sort="date" data-bs-toggle="tooltip" title="Trier par date limite"><i class="fas fa-calendar-alt"></i> Date Limite <i class="fas fa-sort"></i></th>
+                <th data-sort="avancement" data-bs-toggle="tooltip" title="Trier par avancement"><i class="fas fa-chart-line"></i> Avancement (%) <i class="fas fa-sort"></i></th>
+                <th data-sort="taille" data-bs-toggle="tooltip" title="Trier par taille"><i class="fas fa-ruler"></i> Taille <i class="fas fa-sort"></i></th>
+                <th data-bs-toggle="tooltip" title="Actions disponibles"><i class="fas fa-cog"></i> Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tache : ${taches}" class="animate-row">
+                <td th:text="${tache.id}"></td>
+                <td th:text="${tache.dataset.nomDataset}"></td>
+                <td th:text="${#temporals.format(tache.dateLimite, 'yyyy-MM-dd')}"></td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" th:style="'width: ' + ${tache.avancement} + '%'" th:aria-valuenow="${tache.avancement}"></div>
+                    </div>
+                    <span th:text="${#numbers.formatDecimal(tache.avancement, 1, 2)} + '%'"></span>
+                </td>
+                <td th:text="${tache.taille}"></td>
+                <td>
+                    <a th:href="@{/annotator/annotate/{tacheId}(tacheId=${tache.id})}" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Commencer ou continuer l'annotation">
+                        <i class="fas fa-pen"></i> Travailler
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Affichage en cartes pour mobile -->
+    <div th:each="tache : ${taches}" class="task-card animate-row">
+        <p><i class="fas fa-id-badge"></i><strong>ID :</strong> <span th:text="${tache.id}"></span></p>
+        <p><i class="fas fa-database"></i><strong>Nom du Dataset :</strong> <span th:text="${tache.dataset.nomDataset}"></span></p>
+        <p><i class="fas fa-calendar-alt"></i><strong>Date Limite :</strong> <span th:text="${#temporals.format(tache.dateLimite, 'yyyy-MM-dd')}"></span></p>
+        <p><i class="fas fa-chart-line"></i><strong>Avancement :</strong>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" th:style="'width: ' + ${tache.avancement} + '%'" th:aria-valuenow="${tache.avancement}"></div>
+        </div>
+        <span th:text="${#numbers.formatDecimal(tache.avancement, 1, 2)} + '%'"></span>
+        </p>
+        <p><i class="fas fa-ruler"></i><strong>Taille :</strong> <span th:text="${tache.taille}"></span></p>
+        <p>
+            <a th:href="@{/annotator/annotate/{tacheId}(tacheId=${tache.id})}" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Commencer ou continuer l'annotation">
+                <i class="fas fa-pen"></i> Travailler
+            </a>
+        </p>
+    </div>
+
+    <!-- État vide -->
+    <div th:if="${#lists.isEmpty(taches)}" class="empty-state animate-section">
+        <i class="fas fa-tasks"></i>
+        <div>Aucune tâche assignée pour le moment.</div>
+        <p class="text-light">Revenez bientôt pour de nouvelles tâches !</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialisation des tooltips Bootstrap
+    document.addEventListener('DOMContentLoaded', () => {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Filtre dynamique
+        const searchInput = document.getElementById('searchTasks');
+        const rows = document.querySelectorAll('#tasksTable tbody tr');
+        const cards = document.querySelectorAll('.task-card');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            rows.forEach(row => {
+                const dataset = row.children[1].textContent.toLowerCase();
+                const avancement = row.children[3].textContent.toLowerCase();
+                row.style.display = dataset.includes(searchTerm) || avancement.includes(searchTerm) ? '' : 'none';
+            });
+            cards.forEach(card => {
+                const dataset = card.children[1].textContent.toLowerCase();
+                const avancement = card.children[3].textContent.toLowerCase();
+                card.style.display = dataset.includes(searchTerm) || avancement.includes(searchTerm) ? '' : 'none';
+            });
+            gsap.fromTo('.animate-row', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 });
+        });
+
+        // Tri interactif
+        const headers = document.querySelectorAll('th[data-sort]');
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const sortKey = header.dataset.sort;
+                const isAsc = !header.classList.contains('sort-asc');
+                headers.forEach(h => {
+                    h.classList.remove('sort-asc', 'sort-desc');
+                    h.querySelector('i').className = 'fas fa-sort';
+                });
+                header.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
+                header.querySelector('i').className = isAsc ? 'fas fa-sort-up' : 'fas fa-sort-down';
+
+                const tbody = document.querySelector('#tasksTable tbody');
+                const rowsArray = Array.from(tbody.querySelectorAll('tr'));
+                rowsArray.sort((a, b) => {
+                    let aValue, bValue;
+                    switch (sortKey) {
+                        case 'id':
+                            aValue = parseInt(a.children[0].textContent);
+                            bValue = parseInt(b.children[0].textContent);
+                            break;
+                        case 'dataset':
+                            aValue = a.children[1].textContent.toLowerCase();
+                            bValue = b.children[1].textContent.toLowerCase();
+                            break;
+                        case 'date':
+                            aValue = new Date(a.children[2].textContent);
+                            bValue = new Date(b.children[2].textContent);
+                            break;
+                        case 'avancement':
+                            aValue = parseFloat(a.children[3].textContent);
+                            bValue = parseFloat(b.children[3].textContent);
+                            break;
+                        case 'taille':
+                            aValue = parseInt(a.children[4].textContent);
+                            bValue = parseInt(b.children[4].textContent);
+                            break;
+                    }
+                    return isAsc ? (aValue > bValue ? 1 : -1) : (aValue < bValue ? 1 : -1);
+                });
+
+                tbody.innerHTML = '';
+                rowsArray.forEach(row => tbody.appendChild(row));
+                gsap.fromTo('.animate-row', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 });
+            });
+        });
+    });
+
+    // Animation GSAP pour le titre
+    gsap.from(".animate-title", {
+        opacity: 0,
+        y: -50,
+        duration: 1,
+        ease: "power3.out"
+    });
+
+    // Animation GSAP pour les alertes
+    gsap.from(".animate-alert", {
+        opacity: 0,
+        y: 20,
+        duration: 0.5,
+        ease: "power2.out"
+    });
+
+    // Animation GSAP pour les sections
+    gsap.from(".animate-section", {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        scrollTrigger: {
+            trigger: ".animate-section",
+            start: "top 80%"
+        }
+    });
+
+    // Animation GSAP pour les lignes du tableau
+    gsap.from(".animate-row", {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        stagger: 0.1,
+        scrollTrigger: {
+            trigger: "#tasksTable",
+            start: "top 80%"
+        }
+    });
+
+    // Animation au clic des boutons
+    document.querySelectorAll(".btn").forEach(button => {
+        button.addEventListener("click", () => {
+            gsap.to(button, {
+                scale: 0.95,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1,
+                ease: "power1.inOut"
+            });
+        });
+    });
+</script>
+</body>
+</html>
