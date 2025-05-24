@@ -12,6 +12,5 @@ public interface DatasetRepository extends JpaRepository<Dataset, Long> {
     @Query("SELECT d FROM Dataset d WHERE LOWER(d.nomDataset) = LOWER(:nomDataset)")
     Dataset findByNomDatasetIgnoreCase(@Param("nomDataset") String nomDataset);
 
-    // Si vous avez déjà une méthode findByNomDataset, vous pouvez la garder
-    Optional<Dataset> findByNomDataset(String nomDataset);
+
 }

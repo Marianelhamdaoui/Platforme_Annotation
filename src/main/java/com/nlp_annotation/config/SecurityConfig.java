@@ -67,15 +67,12 @@ public class SecurityConfig {
                 String username = authentication.getName();
                 String password = authentication.getCredentials().toString();
 
-                // Charger les détails de l'utilisateur via UserDetailsService
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Vérifier le mot de passe
                 if (!passwordEncoder.matches(password, userDetails.getPassword())) {
                     throw new BadCredentialsException("Mot de passe incorrect");
                 }
 
-                // Retourner un token d'authentification avec les rôles
                 return new UsernamePasswordAuthenticationToken(
                         userDetails.getUsername(),
                         userDetails.getPassword(),

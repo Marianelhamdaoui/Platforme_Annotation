@@ -289,7 +289,6 @@ public class AdminController {
             Annotateur newAnnotator = (Annotateur) utilisateurService.findById(newAnnotatorId);
                     //.orElseThrow(() -> new IllegalArgumentException("Annotateur non trouvé avec l'ID " + newAnnotatorId));
 
-            // Réaffecter la tâche
             tache.setAnnotateur(newAnnotator);
             tacheRepository.save(tache);
 

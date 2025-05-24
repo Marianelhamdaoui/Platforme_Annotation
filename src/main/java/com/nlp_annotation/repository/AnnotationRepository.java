@@ -10,7 +10,5 @@ import java.util.Optional;
 
 public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByCoupleTexte_DatasetId(Long datasetId);
-    long countByAnnotateurIdAndCoupleTexte_DatasetId(Long annotateurId, Long datasetId);
     Optional<Annotation> findByCoupleTexteAndAnnotateur(CoupleTexte coupleTexte, Annotateur annotateur);
-    long countByCoupleTexte_DatasetId(Long datasetId);
 }

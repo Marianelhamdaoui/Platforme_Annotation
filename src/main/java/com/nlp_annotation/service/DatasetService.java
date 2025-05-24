@@ -45,7 +45,6 @@ public class DatasetService {
     public Dataset createDataset(String nomDataset, String description, String classes) {
        // logger.info("Tentative de création du dataset avec nom : {}", nomDataset);
 
-        // Normaliser le nom pour la comparaison (ignorer casse et espaces)
         String normalizedName = nomDataset.trim().toLowerCase();
         Dataset existingDataset = datasetRepository.findByNomDatasetIgnoreCase(normalizedName);
         if (existingDataset != null) {
@@ -53,7 +52,6 @@ public class DatasetService {
             throw new IllegalArgumentException("Nom de dataset déjà utilisé");
         }
 
-        // Créer le nouveau dataset
         Dataset dataset = new Dataset();
         dataset.setNomDataset(nomDataset.trim()); // Conserver le nom original (juste sans espaces superflus)
         dataset.setDescription(description);
@@ -61,7 +59,6 @@ public class DatasetService {
         dataset.setAvancement(0.0);
         dataset = datasetRepository.save(dataset);
 
-        // Gérer les classes
         String[] classesArray = classes.contains(";") ? classes.split(";") : classes.split(",");
         for (String classe : classesArray) {
             ClassesPossibles cp = new ClassesPossibles();
@@ -210,7 +207,6 @@ public class DatasetService {
       tacheRepository.save(tache);
      // logger.info("Avancement mis à jour pour la tâche {} : {}%", tache.getId(), tache.getAvancement());
 
-      // Mettre à jour l'avancement du dataset
       updateDatasetAvancement(tache.getDataset());
   }
 
@@ -249,17 +245,14 @@ public class DatasetService {
     }
 
     public List<Annotateur> getAvailableAnnotators(Dataset dataset, Annotateur excludedAnnotator) {
-        // Récupérer tous les annotateurs
         List<Utilisateur> allUsers = utilisateurService.findAll();
         List<Annotateur> allAnnotators = allUsers.stream()
                 .filter(user -> user instanceof Annotateur)
                 .map(user -> (Annotateur) user)
                 .collect(Collectors.toList());
 
-        // Récupérer les annotateurs déjà assignés à ce dataset
         List<Annotateur> assignedAnnotators = getAnnotatorsForDataset(dataset.getId());
 
-        // Retourner les annotateurs disponibles (non assignés et différents de l'exclu)
         return allAnnotators.stream()
                 .filter(annotator -> !assignedAnnotators.contains(annotator))
                 .filter(annotator -> !annotator.getId().equals(excludedAnnotator.getId()))

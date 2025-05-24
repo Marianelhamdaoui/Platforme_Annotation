@@ -21,7 +21,6 @@ public class CoupleTexte {
     @JoinColumn(name = "dataset_id", nullable = false)
     private Dataset dataset;
 
-    // Constructeur par défaut requis par JPA
     public CoupleTexte() {}
 
     public CoupleTexte(String text1, String text2, Dataset dataset) {
